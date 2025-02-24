@@ -20,7 +20,7 @@ def register_view(request):
                 password=form.cleaned_data.get('password1')
             )
             login(request, new_user)
-            return redirect('core:index')  # Change this if necessary
+            return redirect('core:index', 'partials:base')  # Change this if necessary
     else:
         form = UserRegisterForm()
 

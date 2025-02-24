@@ -1,7 +1,7 @@
-
-<form action="" method="POST">
+<form method="POST">
+    
     {% csrf_token %}
-
-    {{form.as_p}}
+    {{ form.as_p }}
     <button type="submit">Register</button>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 </form>
