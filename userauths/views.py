@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from userauths.forms import UserRegisterForm
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
+from django.conf import settings
+
+User = settings.AUTH_USER_MODEL
 
 def register_view(request):
     if request.method == 'POST':
@@ -40,7 +43,25 @@ def register_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('core:index', 'partials:base')
-    
+        return redirect('core:index')
+
     if request.method == 'POST':
         email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(email=email)  # Check if the email exists
+        except User.DoesNotExist:
+            messages.error(request, f'User with {email} does not exist, please try again.')
+            return redirect('userauths:login')  # Redirect back to login page
+
+        user = authenticate(request, username=email, password=password)  # Authenticate using email
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'You logged in!')
+            return redirect('core:index')
+        else:
+            messages.error(request, 'The Email/Password was incorrect.')
+
+    return render(request, 'userauths/sign-in.html')
